@@ -16,13 +16,22 @@ const PORT = process.env.PORT || 9000;
 
 //connection with database
 mongoose
-.connect("mongodb://127.0.0.1:27017/passport")
+.connect("mongodb://localhost:27017/passport")
 .then(() => {
   console.log("DB Connected....");
   app.listen(PORT, () => {
     console.log("I am listening..........", PORT);
   });
 })
+.catch((error) => {
+  console.log("DB Problem ..." + error);
+});
+
+
+/***********************stracture */
+
+//body barser
+app.use(express.json());
 
 
 //ejs
@@ -30,9 +39,20 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 
-//body barser
-app.use(express.json());
 //routers 
 app.use('/', index);
+
+//login and register meddileware
 app.use('/users', user);
+
+//not found mw
+app.use((req, res)=>{
+  res.status(404).json({data:"not found"})
+})
+
+//error mw take four parameters
+app.use((error,req,res,next)=>{
+  res.status(500).json({data:`from error mw ${error}`})
+
+})
 
